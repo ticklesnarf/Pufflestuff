@@ -473,9 +473,11 @@ class GameScene extends Phaser.Scene {
                 });
             });
         });
-        // Update the score
-        this.score += totalPoints;
-        this.updateScoreUI();
+        // Update the score using the new centralized function
+        if (totalPoints > 0) {
+            this.updateScore(totalPoints);
+        }
+
         // After a delay for animations, drop tiles to fill gaps
         this.time.delayedCall(500, () => {
             this.dropTiles();
@@ -611,10 +613,21 @@ class GameScene extends Phaser.Scene {
             console.log('[dropTiles] No tiles moved. Setting canMove = true.');
             this.canMove = true;
             
-            // Check if the player has reached the target score
-            if (this.score >= this.matchTarget && !this.gameOver) {
-                this.gameWin();
-            }
+            // Win condition is now checked in updateScore
+        }
+    }
+
+    updateScore(points) {
+        console.log('[updateScore] Entered function. Points to add:', points);
+        if (this.gameOver) return; // Don't update score if game is already over
+
+        this.score += points;
+        this.updateScoreUI();
+        console.log(`[updateScore] Score: ${this.score}, Win Target: ${this.matchTarget}, Win Condition Met: ${this.score >= this.matchTarget}`);
+
+        if (this.score >= this.matchTarget && !this.gameOver) {
+            console.log('[updateScore] Triggering gameWin().');
+            this.gameWin();
         }
     }
 
